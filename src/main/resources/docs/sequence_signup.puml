@@ -1,0 +1,70 @@
+@startuml SignUp_Sequence_Diagram
+autonumber
+participant "HTTP Client" as CLIENT
+participant "UserController\n/sign-up" as UC
+participant "UserService" as US
+participant "Utilities\n(Validation, Crypto)" as UTIL
+participant "UserRepository" as UR
+participant "H2 Database" as DB
+participant "GlobalExceptionHandler" as GEH
+
+CLIENT ->> UC: POST /sign-up\n{email, password, phones}
+activate UC
+
+UC ->> US: registerUser(SignUpRequest)
+activate US
+
+US ->> UTIL: Validate email & password
+activate UTIL
+alt Validation Error
+  UTIL -->> GEH: throw BadRequestException
+  activate GEH
+  GEH -->> UC: ErrorResponse (400)
+  deactivate GEH
+  deactivate UTIL
+  deactivate US
+  UC -->> CLIENT: HTTP 400
+  deactivate UC
+end
+UTIL -->> US: ✓ Valid
+deactivate UTIL
+
+US ->> UR: findByEmail(email)
+activate UR
+UR ->> DB: SELECT from users
+activate DB
+DB -->> UR: User data
+deactivate DB
+UR -->> US: Optional<User>
+deactivate UR
+
+alt Email Already Exists
+  US -->> GEH: throw UserAlreadyExistsException
+  activate GEH
+  GEH -->> UC: ErrorResponse (422)
+  deactivate GEH
+  deactivate US
+  UC -->> CLIENT: HTTP 422
+  deactivate UC
+end
+
+US ->> UTIL: Hash password & generate JWT
+activate UTIL
+UTIL -->> US: Encrypted password, JWT token
+deactivate UTIL
+
+US ->> UR: save(User with UUID)
+activate UR
+UR ->> DB: INSERT into users + phones (cascade)
+activate DB
+DB -->> UR: Success
+deactivate DB
+UR -->> US: Saved User
+deactivate UR
+
+US -->> UC: UserResponse with token
+deactivate US
+
+UC -->> CLIENT: HTTP 201 Created\n{id, email, token, created}
+
+@enduml

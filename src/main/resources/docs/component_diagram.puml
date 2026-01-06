@@ -1,0 +1,101 @@
+@startuml BCI_Component_Diagram
+!define COMPONENT_COLOR #E1F5FE
+!define INTERFACE_COLOR #FFE5E5
+!define DATABASE_COLOR #F1F8E9
+!define EXTERNAL_COLOR #FFF3E0
+
+skinparam component {
+  BackgroundColor COMPONENT_COLOR
+  BorderColor #01579B
+  BorderThickness 2
+  FontColor #000000
+  FontStyle bold
+}
+
+skinparam package {
+  BackgroundColor #FAFAFA
+  BorderColor #424242
+  BorderThickness 2
+  FontColor #212121
+}
+
+skinparam interface {
+  BackgroundColor INTERFACE_COLOR
+  BorderColor #C62828
+  FontColor #000000
+}
+
+skinparam database {
+  BackgroundColor DATABASE_COLOR
+  BorderColor #33691E
+  FontColor #000000
+}
+
+package "BCI Microservice\nSpring Boot 2.5.14 / Java 11" as BCI_MS {
+  
+  package "Presentation Layer (HTTP Port 8080)" as PRESENTATION {
+    interface "HTTP API\n(REST)" as HTTP_API
+    component [UserController\n<<REST Controller>>\n{service}] as UC
+    component [GlobalExceptionHandler\n<<Exception Advice>>\n{service}] as GEH
+    
+    HTTP_API --> UC
+    HTTP_API --> GEH
+  }
+
+  package "Application Layer (Business Logic)" as APPLICATION {
+    component [UserService\n<<Service>>\n{service}] as US
+    component [SecurityConfig\n<<Configuration>>\n{config}] as SC
+    component [JwtTokenProvider\n<<JWT Utility>>\n{util}] as JWT
+    component [PasswordEncryptor\n<<Password Utility>>\n{util}] as PE
+    component [ValidationUtil\n<<Validation>>\n{util}] as VU
+  }
+
+  package "Persistence Layer (Data Access)" as PERSISTENCE {
+    component [UserRepository\n<<Repository>>\n{repository}] as UR
+    component [User Entity\n<<JPA Entity>>] as UE
+    component [Phone Entity\n<<JPA Entity>>] as PHONE
+  }
+
+  package "Data Layer" as DATA {
+    database "H2 Database\n(In-Memory)\nHibernate ORM" as H2DB
+  }
+
+  ' Presentation Layer connections
+  UC --> US: registerUser()\nlogin()
+  UC --> GEH: throws
+  
+  ' Security configuration
+  SC -.-> US: secures
+  SC -.-> UC: configures
+  
+  ' Service Layer connections
+  US --> JWT: generateToken()\nvalidateToken()\nextractEmail()
+  US --> PE: encode()\nmatches()
+  US --> VU: isValidEmail()\nisValidPassword()
+  US --> UR: findByEmail()\nsave()\nfindById()
+  
+  ' Persistence Layer connections
+  UR --> UE: ORM Mapping
+  UR --> PHONE: ORM Mapping
+  UE --> H2DB: persists
+  PHONE --> H2DB: persists
+}
+
+package "External Dependencies" as EXTERNAL {
+  component [Spring Framework\n<<Framework>>] as SPRING_FW
+  component [Spring Security\n<<Auth Framework>>] as SPRING_SEC
+  component [Hibernate ORM\n<<ORM Framework>>] as HIBERNATE
+  component [JJWT 0.11.5\n<<JWT Library>>] as JJWT_LIB
+  component [BCrypt\n<<Password Hash>>] as BCRYPT
+  component [H2 1.4.200\n<<Database Driver>>] as H2_DRIVER
+}
+
+' External dependencies
+SPRING_FW -.-> BCI_MS
+SPRING_SEC -.-> SC
+HIBERNATE -.-> UR
+JJWT_LIB -.-> JWT
+BCRYPT -.-> PE
+H2_DRIVER -.-> H2DB
+
+@enduml

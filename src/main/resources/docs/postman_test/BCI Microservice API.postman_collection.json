@@ -1,0 +1,364 @@
+{
+	"info": {
+		"_postman_id": "0923b5c5-96ef-42e1-b8ab-44e54b2916dc",
+		"name": "BCI Microservice API",
+		"description": "Collection para probar el microservicio de autenticación BCI con endpoints de registro y login",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30921479"
+	},
+	"item": [
+		{
+			"name": "1. Registro - Caso Exitoso",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"Password123\",\n  \"phones\": [\n    {\n      \"number\": 1234567890,\n      \"citycode\": 1,\n      \"contrycode\": \"+1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sign-up"
+					]
+				},
+				"description": "Registra un nuevo usuario con datos válidos. Retorna 201 Created con token JWT."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Registro - Sin Teléfono (Opcional)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"María García\",\n  \"email\": \"maria.garcia@example.com\",\n  \"password\": \"Securepass45\",\n  \"phones\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sign-up"
+					]
+				},
+				"description": "Registra usuario sin teléfono. El campo phones es opcional."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Registro - Múltiples Teléfonos",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Carlos López\",\n  \"email\": \"carlos.lopez@example.com\",\n  \"password\": \"Mypassword78\",\n  \"phones\": [\n    {\n      \"number\": 1111111111,\n      \"citycode\": \"1\",\n      \"contrycode\": \"57\"\n    },\n    {\n      \"number\": 2222222222,\n      \"citycode\": \"2\",\n      \"contrycode\": \"57\"\n    },\n    {\n      \"number\": 3333333333,\n      \"citycode\": \"3\",\n      \"contrycode\": \"1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sign-up"
+					]
+				},
+				"description": "Registra usuario con múltiples números de teléfono."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Error - Email Inválido",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"email-invalido\",\n  \"password\": \"Password123\",\n  \"phones\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sign-up"
+					]
+				},
+				"description": "Intenta registrar con email inválido. Debe retornar 400 Bad Request."
+			},
+			"response": []
+		},
+		{
+			"name": "5. Error - Contraseña Débil (Muy Corta)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Pwd1\",\n  \"phones\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sign-up"
+					]
+				},
+				"description": "Intenta registrar con contraseña muy corta (<8 chars). Debe retornar 400 Bad Request."
+			},
+			"response": []
+		},
+		{
+			"name": "6. Error - Contraseña Sin Mayúscula",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test2@example.com\",\n  \"password\": \"password123\",\n  \"phones\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sign-up"
+					]
+				},
+				"description": "Intenta registrar sin mayúscula en contraseña. Debe retornar 400 Bad Request. Requiere: 1 mayúscula, 2+ dígitos, 8-12 caracteres."
+			},
+			"response": []
+		},
+		{
+			"name": "7. Error - Contraseña Sin Dígitos",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test3@example.com\",\n  \"password\": \"PasswordAbc\",\n  \"phones\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sign-up"
+					]
+				},
+				"description": "Intenta registrar sin dígitos en contraseña. Debe retornar 400 Bad Request. Requiere mínimo 2 dígitos."
+			},
+			"response": []
+		},
+		{
+			"name": "8. Error - Email Duplicado",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Otro Nombre\",\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"Anotherpas46\",\n  \"phones\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sign-up"
+					]
+				},
+				"description": "Intenta registrar con email que ya existe (del request #1). Debe retornar 422 Unprocessable Entity. NOTA: Ejecutar primero request #1."
+			},
+			"response": []
+		},
+		{
+			"name": "9. Login - Token Válido",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5nYXJjaWFAZXhhbXBsZS5jb20iLCJlbWFpbCI6Im1hcmlhLmdhcmNpYUBleGFtcGxlLmNvbSIsImlhdCI6MTc2NzY2MDg0MywiZXhwIjoxNzY3NzQ3MjQzfQ.iVl3ti0M1Dy0QhlbSAQM751DjxbAg076NQKZm4Z9Up8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmUyekBleGFtcGxlLmNvbSIsImVtYWlsIjoianVhbi5wZXJlMnpAZXhhbXBsZS5jb20iLCJpYXQiOjE3Njc0OTQ3NzAsImV4cCI6MTc2NzU4MTE3MH0.ddIztrMi3KjOnvA_xFUfhBWc26PCmYGgVPhMeMab5g0",
+						"description": "Reemplazar con el token recibido en el request #1",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				},
+				"description": "Autentica usando un token JWT válido. Retorna 200 OK con datos del usuario y nuevo token. NOTA: Cambiar el token Bearer por el recibido en el request #1."
+			},
+			"response": []
+		},
+		{
+			"name": "10. Error - Token Inválido",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer TOKEN_INVALIDO_FAKE_123456789"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				},
+				"description": "Intenta autenticar con un token inválido. Debe retornar 401 Unauthorized."
+			},
+			"response": []
+		},
+		{
+			"name": "11. Error - Header Authorization Faltante",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				},
+				"description": "Intenta login sin enviar header Authorization. Debe retornar 400 Bad Request."
+			},
+			"response": []
+		},
+		{
+			"name": "12. Error - Usuario No Encontrado",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c3VhcmlvLm5vLWV4aXN0ZW50ZUBleGFtcGxlLmNvbSIsImlhdCI6MTcwNDI3OTQwMCwiZXhwIjoxNzA0MzY1ODAwfQ.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+						"description": "Token de usuario que no existe en BD"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				},
+				"description": "Intenta login con un usuario que no existe en la BD. Debe retornar 404 Not Found."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string",
+			"description": "Guardar aquí el token JWT recibido del registro"
+		}
+	]
+}

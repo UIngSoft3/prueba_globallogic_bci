@@ -1,0 +1,61 @@
+@startuml Login_Sequence_Diagram
+autonumber
+participant "HTTP Client" as CLIENT
+participant "UserController\n/login" as UC
+participant "UserService" as US
+participant "Utilities\n(JWT, Crypto)" as UTIL
+participant "UserRepository" as UR
+participant "H2 Database" as DB
+participant "GlobalExceptionHandler" as GEH
+
+CLIENT ->> UC: GET /login\nAuthorization: Bearer {token}
+activate UC
+
+UC ->> UTIL: Validate & extract JWT
+activate UTIL
+alt Invalid/Expired Token
+  UTIL -->> GEH: throw InvalidCredentialsException
+  activate GEH
+  GEH -->> UC: ErrorResponse (401)
+  deactivate GEH
+  deactivate UTIL
+  UC -->> CLIENT: HTTP 401 Unauthorized
+  deactivate UC
+end
+UTIL -->> UC: Email extracted from token
+deactivate UTIL
+
+UC ->> US: authenticateUser(email)
+activate US
+
+US ->> UR: findByEmail(email)
+activate UR
+UR ->> DB: SELECT from users WHERE email = ?
+activate DB
+DB -->> UR: User data
+deactivate DB
+UR -->> US: Optional<User>
+deactivate UR
+
+alt User Not Found
+  US -->> GEH: throw UserNotFoundException
+  activate GEH
+  GEH -->> UC: ErrorResponse (404)
+  deactivate GEH
+  deactivate US
+  UC -->> CLIENT: HTTP 404 Not Found
+  deactivate UC
+end
+
+US ->> UTIL: Verify password & refresh token
+activate UTIL
+UTIL -->> US: Password valid, new JWT token
+deactivate UTIL
+
+US -->> UC: UserResponse with refreshed token
+deactivate US
+
+UC -->> CLIENT: HTTP 200 OK\n{id, email, token, created}
+deactivate UC
+
+@enduml

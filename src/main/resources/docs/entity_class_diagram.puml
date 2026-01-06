@@ -1,0 +1,97 @@
+@startuml Entity_Class_Diagram
+skinparam classBackgroundColor #E1F5FE
+skinparam classBorderColor #01579B
+skinparam classArrowColor #01579B
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package "JPA Entities" {
+  class User {
+    {id} id: String (UUID)
+    --
+    email: String
+    password: String
+    name: String
+    created: LocalDateTime
+    lastLogin: LocalDateTime
+    isActive: Boolean
+    phones: List<Phone>
+    --
+    +getId(): String
+    +getEmail(): String
+    +setPassword(String): void
+    +getCreated(): LocalDateTime
+    +setLastLogin(LocalDateTime): void
+    +getPhones(): List<Phone>
+    +addPhone(Phone): void
+  }
+
+  class Phone {
+    {id} id: Long
+    --
+    number: Long
+    citycode: Integer
+    contrycode: String
+    user: User
+    --
+    +getId(): Long
+    +getNumber(): Long
+    +getCitycode(): Integer
+    +getContrycode(): String
+    +getUser(): User
+  }
+
+  User "1" --> "0..*" Phone: has
+}
+
+package "Request/Response DTOs" {
+  class SignUpRequest {
+    --
+    name: String
+    email: String
+    password: String
+    phones: List<PhoneDto>
+  }
+
+  class UserResponse {
+    --
+    id: String
+    name: String
+    email: String
+    created: LocalDateTime
+    lastLogin: LocalDateTime
+    isActive: Boolean
+    token: String
+  }
+
+  class PhoneDto {
+    --
+    number: Long
+    citycode: Integer
+    contrycode: String
+  }
+
+  SignUpRequest "1" --> "0..*" PhoneDto: contains
+}
+
+package "Exception DTOs" {
+  class ErrorResponse {
+    --
+    timestamp: LocalDateTime
+    status: int
+    error: String
+    message: String
+    path: String
+    details: List<ErrorDetail>
+  }
+
+  class ErrorDetail {
+    --
+    field: String
+    message: String
+  }
+
+  ErrorResponse "1" --> "0..*" ErrorDetail: contains
+}
+
+@enduml
