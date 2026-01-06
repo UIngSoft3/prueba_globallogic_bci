@@ -1,9 +1,6 @@
 package com.globallogic.bci.entity;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Phone entity representing a phone number associated with a user.

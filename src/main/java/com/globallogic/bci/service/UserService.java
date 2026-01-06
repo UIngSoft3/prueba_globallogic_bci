@@ -5,6 +5,7 @@ import com.globallogic.bci.dto.SignUpRequest;
 import com.globallogic.bci.dto.UserResponse;
 import com.globallogic.bci.entity.Phone;
 import com.globallogic.bci.entity.User;
+import com.globallogic.bci.exception.BadRequestException;
 import com.globallogic.bci.exception.InvalidCredentialsException;
 import com.globallogic.bci.exception.UserAlreadyExistsException;
 import com.globallogic.bci.exception.UserNotFoundException;
@@ -60,12 +61,12 @@ public class UserService {
     public UserResponse signUp(SignUpRequest signUpRequest) {
         // Validate email format
         if (!validationUtil.isValidEmail(signUpRequest.getEmail())) {
-            throw new IllegalArgumentException("Invalid email format. Email must match pattern: example@domain.com");
+            throw new BadRequestException("Invalid email format. Email must match pattern: example@domain.com");
         }
 
         // Validate password format
         if (!validationUtil.isValidPassword(signUpRequest.getPassword())) {
-            throw new IllegalArgumentException("Invalid password format. Password must be 8-12 characters with exactly one uppercase letter and at least two digits");
+            throw new BadRequestException("Invalid password format. Password must be 8-12 characters with exactly one uppercase letter and at least two digits");
         }
 
         // Check if user already exists

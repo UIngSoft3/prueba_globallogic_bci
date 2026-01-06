@@ -46,68 +46,6 @@ cd bci
 
 ---
 
-## 📁 Project Structure
-
-```
-bci/
-├── src/
-│   ├── main/
-│   │   ├── java/com/globallogic/bci/
-│   │   │   ├── BciApplication.java                 # Application entry point
-│   │   │   ├── config/
-│   │   │   │   └── SecurityConfig.java             # Spring Security configuration
-│   │   │   ├── controller/
-│   │   │   │   └── UserController.java             # REST API endpoints (/sign-up, /login)
-│   │   │   ├── service/
-│   │   │   │   └── UserService.java                # Business logic for users
-│   │   │   ├── repository/
-│   │   │   │   └── UserRepository.java             # JPA repository for data access
-│   │   │   ├── entity/
-│   │   │   │   ├── User.java                       # User entity (JPA)
-│   │   │   │   └── Phone.java                      # Phone entity (JPA)
-│   │   │   ├── dto/
-│   │   │   │   ├── SignUpRequest.java              # Request DTO for /sign-up
-│   │   │   │   ├── UserResponse.java               # Response DTO for users
-│   │   │   │   ├── PhoneDto.java                   # Phone data transfer object
-│   │   │   │   └── ErrorResponse.java              # Error response DTO
-│   │   │   ├── exception/
-│   │   │   │   ├── UserAlreadyExistsException.java # Custom exception (422)
-│   │   │   │   ├── UserNotFoundException.java       # Custom exception (404)
-│   │   │   │   ├── InvalidCredentialsException.java # Custom exception (401)
-│   │   │   │   ├── BadRequestException.java        # Custom exception (400)
-│   │   │   │   └── GlobalExceptionHandler.java     # Centralized exception handling
-│   │   │   └── util/
-│   │   │       ├── ValidationUtil.java             # Email and password validation
-│   │   │       ├── PasswordEncryptor.java          # BCrypt password encryption
-│   │   │       └── JwtTokenProvider.java           # JWT token generation/validation
-│   │   └── resources/
-│   │       ├── application.properties              # Application configuration
-│   │       └── docs/                               # Documentation folder
-│   │           ├── README.md                       # Documentation index
-│   │           ├── COMPONENT_DIAGRAM.md            # Component architecture reference
-│   │           ├── component_diagram.puml          # UML Component Diagram (PlantUML)
-│   │           ├── SEQUENCE_DIAGRAM.md             # Sequence diagrams reference
-│   │           ├── sequence_signup.puml            # UML Sequence Diagram for /sign-up (PlantUML)
-│   │           ├── sequence_login.puml             # UML Sequence Diagram for /login (PlantUML)
-│   │           ├── entity_class_diagram.puml       # UML Class Diagram (PlantUML)
-│   │           └── postman_test/
-│   │               ├── POSTMAN_COLLECTION_README.md # 12 test cases documentation
-│   │               ├── BCI_Collection.postman_collection.json
-│   │               ├── BCI_Environment.postman_environment.json
-│   │               └── BCI_Test_Cases.postman_collection.json
-│   └── test/
-│       └── groovy/com/globallogic/bci/
-│           └── BciApplicationTests.groovy          # Application tests
-├── gradle/
-│   └── wrapper/                                   # Gradle wrapper files
-├── build.gradle                                   # Gradle build configuration
-├── settings.gradle                                # Gradle project settings
-├── README.md                                      # This file (Main documentation)
-└── build/                                         # Generated build artifacts (not committed)
-```
-
----
-
 ## 🔨 Building the Project
 
 ### Step 1: Clone the Repository
@@ -146,15 +84,6 @@ X actionable tasks: X executed
 ### Start the Application
 ```bash
 ./gradlew bootRun
-```
-
-### Application Startup Confirmation
-You should see output similar to:
-```
-2026-01-05 21:30:55.450  INFO 27040 --- [main] com.globallogic.bci.BciApplication : 
-Starting BciApplication v0.0.1-SNAPSHOT on HP-PC
-2026-01-05 21:30:55.450  INFO 27040 --- [main] com.globallogic.bci.BciApplication : 
-Started BciApplication in 4.139 seconds (JVM running for 4.52)
 ```
 
 ### Application Ready
@@ -353,7 +282,7 @@ curl -X GET "http://localhost:8080/login?token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJq
 
 ### Run All Tests
 ```bash
-./gradlew test
+./gradlew clean test jacocoTestReport
 ```
 
 ### Run Specific Test Class
@@ -365,6 +294,7 @@ curl -X GET "http://localhost:8080/login?token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJq
 After running tests, view detailed results at:
 ```
 build/reports/tests/test/index.html
+build/reports/jacoco/test/html/index.html
 ```
 
 ### Postman Test Collection
@@ -535,37 +465,6 @@ CREATE TABLE phones (
 
 ## ⚙️ Configuration
 
-### Application Properties
-**File**: `src/main/resources/application.properties`
-
-```properties
-# Server Configuration
-server.port=8080
-server.servlet.context-path=/
-
-# Spring Boot
-spring.application.name=bci
-spring.profiles.active=dev
-
-# H2 Database Configuration
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.datasource.driverClassName=org.h2.Driver
-spring.datasource.username=sa
-spring.datasource.password=
-
-# Hibernate/JPA Configuration
-spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-
-# Logging
-logging.level.root=INFO
-logging.level.com.globallogic=DEBUG
-logging.level.org.springframework.web=DEBUG
-logging.level.org.hibernate.SQL=DEBUG
-```
-
 ### Configuration Details
 
 - **Server Port**: 8080 (REST API accessible at `http://localhost:8080`)
@@ -684,7 +583,7 @@ For more detailed information, refer to:
 
 ---
 
-## 🎯 How Evaluators Should Test This Project
+## 🎯 How To Test This Project
 
 1. **Read this README.md** - Understand the project scope and architecture
 2. **Review UML diagrams** - Examine system design in `src/main/resources/docs/`

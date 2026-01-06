@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.5.14'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'jacoco'
 }
 
 group = 'com.globallogic'
@@ -27,8 +28,46 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.mockito:mockito-core:4.11.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:4.11.0'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// JaCoCo configuration for code coverage reporting
+jacoco {
+	toolVersion = "0.8.11"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml {
+			required = true
+		}
+		html {
+			required = true
+		}
+		csv {
+			required = false
+		}
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				'com/globallogic/bci/entity/**',
+				'com/globallogic/bci/dto/**',
+				'com/globallogic/bci/exception/**',
+				'com/globallogic/bci/repository/**'
+			])
+		}))
+	}
+}
+
+test {
+	finalizedBy jacocoTestReport
+}
+
+

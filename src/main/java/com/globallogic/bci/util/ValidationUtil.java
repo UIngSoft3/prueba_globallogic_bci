@@ -177,23 +177,28 @@ public class ValidationUtil {
      * @see #PASSWORD_REGEX
      */
     public boolean isValidPassword(String password) {
-        if (password == null || password.length() < 8 || password.length() > 12) {
+        if (password == null) {
+            return false;
+        }
+        
+        // Use regex pattern to validate password
+        if (!password.matches(PASSWORD_REGEX)) {
             return false;
         }
 
-        // Check for exactly one uppercase letter
+        // Check for exactly one uppercase letter (additional validation)
         int uppercaseCount = countUppercaseLetters(password);
         if (uppercaseCount != 1) {
             return false;
         }
 
-        // Check for at least two digits
+        // Check for at least two digits (additional validation)
         int digitCount = countDigits(password);
         if (digitCount < 2) {
             return false;
         }
 
-        // Check for at least one lowercase letter
+        // Check for at least one lowercase letter (additional validation)
         int lowercaseCount = countLowercaseLetters(password);
         if (lowercaseCount < 1) {
             return false;
@@ -211,7 +216,7 @@ public class ValidationUtil {
     public int countUppercaseLetters(String str) {
         if (str == null) return 0;
         long count = str.chars()
-                .filter(c -> Character.isUpperCase(c))
+                .filter(Character::isUpperCase)
                 .count();
         return (int) count;
     }
