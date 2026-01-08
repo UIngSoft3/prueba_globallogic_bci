@@ -69,6 +69,18 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle BadRequestException for validation errors.
+     * Returns 400 Bad Request status.
+     *
+     * @param exception The exception thrown
+     * @return ResponseEntity with error details
+     */
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException exception) {
+        return buildErrorResponse(exception.getMessage(), HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * Handle generic exceptions.
      * Returns 500 Internal Server Error status.
      *
